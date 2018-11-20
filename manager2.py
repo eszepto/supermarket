@@ -29,7 +29,7 @@ class SQLite_database(object):
     def edit(self,ID,name,price,quantity):
         conn = sqlite3.connect('store.db')
         cur = conn.cursor()
-        cur.execute("UPDATE " + self.table + " SET price=? , quantity=? WHERE id=? and name=?",(price,quantity,ID,name))
+        cur.execute("UPDATE " + self.table + " SET name=? , price=? , quantity=? WHERE id=?",(price,quantity,ID,name))
         conn.commit()
         conn.close()
     def delete(self,name):
@@ -178,7 +178,7 @@ def edit_popup():
     id_entry.config(state=DISABLED)
     name = value_in_selected['values'][1]
     name_entry.insert(END,name)
-    name_entry.config(state=DISABLED)
+    #name_entry.config(state=DISABLED)
     price = value_in_selected['values'][2]
     price_entry.insert(END,price)
     quantity = value_in_selected['values'][3]
@@ -233,6 +233,11 @@ def on_click(event=None):
     region = stock_table.identify("region", event.x, event.y)
     if(region == 'cell'):
         enable_button()
+def on_doubleclick(event=None):
+    region = stock_table.identify("region", event.x, event.y)
+    if(region == 'cell'):
+        #enable_button()
+        edit_popup()
 
 #%%    front-end creating components
 stock = SQLite_database('store.db','stock')
@@ -254,13 +259,16 @@ edit_button = Button(Rightframe,text='EDIT',command=edit_popup,height=2,width=8)
 del_button = Button(Rightframe,text='DEL',command=del_popup,height=2,width=8)
 refresh_button = Button(Rightframe,text='Refresh',width="8",height="1",command=refresh)
 
+style = ttk.Style()
+style.configure("Treeview.Heading", font=('Calibri', 14),rowheight=40)
+style.configure("Treeview",font=('Calibri',12),rowheight=40)
+
 stock_table = ttk.Treeview(Leftframe,columns=('id','name','price','quantity'),show='headings')
 stock_table.bind('<Button-1>',on_click)
+stock_table.bind('<Double-Button-1>',on_doubleclick)
 vsb = ttk.Scrollbar(Leftframe, orient="vertical", command=stock_table.yview)
-stock_table.configure(yscrollcommand=vsb.set)
 
-#style = ttk.Style()
-#style.configure("Treeview.Heading", font=(None, 16))
+stock_table.configure(yscrollcommand=vsb.set)
 
 stock_table.heading('id',text='ID',command=lambda:treeview_sort_column(stock_table, 'id', True))
 stock_table.column('id',anchor='center',width=100)

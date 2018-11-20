@@ -29,7 +29,7 @@ class SQLite_database(object):
     def edit(self,ID,name,price,quantity):
         conn = sqlite3.connect('store.db')
         cur = conn.cursor()
-        cur.execute("UPDATE " + self.table + " SET name=? , price=? , quantity=? WHERE id=?",(price,quantity,ID,name))
+        cur.execute("UPDATE " + self.table + " SET name=? , price=? , quantity=? WHERE id=?",(name,price,quantity,ID))
         conn.commit()
         conn.close()
     def delete(self,name):
